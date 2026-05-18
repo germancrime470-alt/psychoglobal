@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Ez Client | Главная • Создатели</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Poppins', 'Roboto', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 30%, #0b0710, #03010a);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+
+        /* Основной контейнер приложения */
+        .app-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* ---------- БУРГЕР МЕНЮ ---------- */
+        .burger-menu {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1200;
+        }
+
+        .burger-icon {
+            background: #1e1930;
+            width: 50px;
+            height: 50px;
+            border-radius: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            border: 1px solid #7b4cff;
+            box-shadow: 0 0 12px rgba(128, 0, 255, 0.4);
+            transition: 0.2s;
+        }
+
+        .burger-icon span {
+            width: 26px;
+            height: 2px;
+            background: #c58aff;
+            display: block;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .burger-icon:hover {
+            background: #2a1f4a;
+            transform: scale(1.02);
+        }
+
+        /* Меню навигации (выпадающее) */
+        .nav-menu {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #0e0c17;
+            backdrop-filter: blur(16px);
+            border-radius: 1.5rem;
+            padding: 0.8rem 0;
+            min-width: 180px;
+            border: 1px solid #6b42c2;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            z-index: 1199;
+            transform: scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s ease;
+            transform-origin: top right;
+        }
+
+        .nav-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            color: #e2d9ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px solid #2a1f4a;
+        }
+
+        .nav-item:last-child {
+            border-bottom: none;
+        }
+
+        .nav-item i {
+            width: 24px;
+            color: #b87aff;
+        }
+
+        .nav-item:hover {
+            background: #2a1f4a;
+            color: white;
+        }
+
+        /* Страницы (контент) */
+        .page {
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        /* Стили главной страницы (как ранее) */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .purple-badge {
+            background: rgba(128, 0, 255, 0.2);
+            backdrop-filter: blur(4px);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.5rem 1.5rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #c084fc;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(160, 80, 255, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #b77eff, #6b2eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-card {
+            background: #12101c;
+            max-width: 480px;
+            margin: 1.5rem auto 0 auto;
+            padding: 1rem 1.8rem;
+            border-radius: 80px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 12px 28px rgba(98, 0, 234, 0.3);
+            border: 1px solid #4a2a8a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .date-card:hover {
+            border-color: #aa7eff;
+        }
+
+        .date-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e2d9ff;
+        }
+
+        .date-text span {
+            color: #ca9eff;
+            font-weight: 800;
+        }
+
+        .tariff-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0 2rem;
+        }
+
+        .tariff-card {
+            background: #0e0c17;
+            border-radius: 2rem;
+            width: 320px;
+            padding: 1.8rem 1.5rem 2rem;
+            transition: all 0.3s;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2f2560;
+            position: relative;
+            text-align: center;
+        }
+
+        .tariff-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 28px 40px -14px rgba(110, 0, 255, 0.5);
+            border-color: #8b5cf6;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: linear-gradient(95deg, #9b4dff, #5a1ec9);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            box-shadow: 0 4px 12px rgba(128, 0, 255, 0.5);
+        }
+
+        .tariff-icon {
+            font-size: 3.2rem;
+            color: #c58aff;
+            background: #1e1930;
+            width: 75px;
+            height: 75px;
+            line-height: 75px;
+            text-align: center;
+            border-radius: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            transition: 0.2s;
+        }
+
+        .tariff-title {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #ede6ff;
+            margin: 0.5rem 0 0.25rem;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #bf8eff;
+            margin: 1rem 0 0.25rem;
+        }
+
+        .price small {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #a183cc;
+        }
+
+        .per-period {
+            color: #ab8ed9;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed #4a2e7a;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .saving {
+            background: #1c1730;
+            border-radius: 30px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #c49eff;
+            margin: 0.8rem 0;
+            display: inline-block;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin: 1.2rem 0 1.8rem;
+            text-align: left;
+            padding-left: 0.5rem;
+        }
+
+        .feature-list li {
+            margin: 0.6rem 0;
+            font-size: 0.9rem;
+            color: #cdc3f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li i {
+            color: #bc8eff;
+            width: 20px;
+        }
+
+        .btn-buy {
+            background: linear-gradient(100deg, #823eff, #4f1dd9);
+            border: none;
+            width: 100%;
+            padding: 0.9rem 0;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 18px rgba(98, 0, 255, 0.4);
+        }
+
+        .btn-buy:hover {
+            background: linear-gradient(100deg, #954eff, #6b2aff);
+            transform: scale(0.98);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+            color: #9580c9;
+            border-top: 1px solid rgba(128, 90, 200, 0.3);
+            padding-top: 1.8rem;
+        }
+
+        /* Страница "Создатели" */
+        .creators-container {
+            background: #0e0c17;
+            border-radius: 2rem;
+            padding: 2rem;
+            border: 1px solid #6b42c2;
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+
+        .creators-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #dbbaff, #9b6eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        .creator-card {
+            background: #1e1930;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            border-left: 4px solid #b87aff;
+        }
+
+        .creator-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e2d9ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .creator-role {
+            color: #ab8ed9;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Попап оплаты */
+        .payment-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background: #12101c;
+            border-radius: 2rem;
+            width: 320px;
+            max-width: 85%;
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+            border: 1px solid #9b6eff;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.6);
+            z-index: 1300;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            backdrop-filter: blur(12px);
+        }
+
+        .payment-popup.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid #4a2a8a;
+            padding-bottom: 0.5rem;
+        }
+
+        .popup-header h3 {
+            color: #e2d9ff;
+            font-size: 1.3rem;
+        }
+
+        .close-popup {
+            background: none;
+            border: none;
+            color: #b87aff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .payment-option {
+            background: #1e1930;
+            border-radius: 1.2rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #3a2a6a;
+        }
+
+        .payment-option:hover {
+            background: #2a1f4a;
+            border-color: #b87aff;
+        }
+
+        .payment-icon {
+            font-size: 2rem;
+            width: 48px;
+        }
+
+        .payment-title {
+            font-weight: bold;
+            color: #f0e6ff;
+        }
+
+        .popup-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 1250;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+        }
+
+        .popup-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 750px) {
+            .tariff-card { width: 280px; }
+            h1 { font-size: 2rem; }
+            .burger-menu { top: 12px; right: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Бургер меню -->
+    <div class="burger-menu">
+        <div class="burger-icon" id="burgerIcon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-menu" id="navMenu">
+            <div class="nav-item" data-page="home">
+                <i class="fas fa-home"></i> Главная
+            </div>
+            <div class="nav-item" data-page="creators">
+                <i class="fas fa-users"></i> Создатели
+            </div>
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА ГЛАВНАЯ -->
+    <div id="homePage" class="page active-page">
+        <div class="hero-section">
+            <div class="purple-badge">
+                <i class="fas fa-moon"></i> <span>Dark Purple Energy</span> <i class="fas fa-crown"></i>
+            </div>
+            <h1>Ez <span style="color:#b87aff;">Client</span></h1>
+            <div class="date-card" id="js-dateWidget">
+                <i class="fas fa-calendar-alt"></i>
+                <div class="date-text">
+                    <span id="currentDayName"></span>, <span id="currentDateNumber"></span> <span id="currentMonthName"></span> <span id="currentYear"></span>
+                </div>
+                <i class="fas fa-star-of-life"></i>
+            </div>
+        </div>
+
+        <div class="tariff-grid">
+            <!-- Месяц 500₽ -->
+            <div class="tariff-card">
+                <div class="popular-badge"><i class="fas fa-star"></i> ПОПУЛЯРНЫЙ</div>
+                <div class="tariff-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="tariff-title">Месяц</div>
+                <div class="price">500 ₽ <small>/ 30 дней</small></div>
+                <div class="per-period"><i class="fas fa-coins"></i> всего 16.6₽/день</div>
+                <div class="saving"><i class="fas fa-gem"></i> Гибкий старт</div>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i> 30 дней полного доступа</li>
+                    <li><i class="fas fa-headset"></i> Приоритетная поддержка</li>
+                    <li><i class="fas fa-chart-line"></i> Безлимит по функциям</li>
+                    <li><i class="fas fa-cloud-upload-alt"></i> Обновления включены</li>
+                </ul>
+                <button class="btn-buy" data-period="месяц" data-price="500">
+                    <i class="fas fa-shopping-cart"></i> Купить за 500₽
+                </button>
+            </div>
+
+            <!-- Навсегда 1500₽ -->
+            <div class="tariff-card">
+                <div class="popular-badge"><i class="fas fa-infinity"></i> BEST VALUE</div>
+                <div class="tariff-icon"><i class="fas fa-infinity"></i></div>
+                <div class="tariff-title">Навсегда</div>
+                <div class="price">1 500 ₽ <small>/ lifetime</small></div>
+                <div class="per-period"><i class="fas fa-gift"></i> Единый платёж</div>
+                <div class="saving"><i class="fas fa-fire"></i> Экономия 1000+ ₽</div>
+                <ul class="feature-list">
+                    <li><i class="fas fa-check-circle"></i> Бессрочный доступ</li>
+                    <li><i class="fas fa-crown"></i> VIP-поддержка 24/7</li>
+                    <li><i class="fas fa-download"></i> Все будущие обновления</li>
+                    <li><i class="fas fa-star"></i> Эксклюзивный контент</li>
+                </ul>
+                <button class="btn-buy" data-period="навсегда" data-price="1500">
+                    <i class="fas fa-shopping-cart"></i> Купить за 1500₽
+                </button>
+            </div>
+        </div>
+        <div class="footer-note">
+            <i class="fas fa-lock"></i> Безопасная оплата   |   <i class="fas fa-rotate-left"></i> 30 дней возврата   |   <i class="far fa-clock"></i> Мгновенная активация
+        </div>
+    </div>
+
+    <!-- СТРАНИЦА СОЗДАТЕЛИ -->
+    <div id="creatorsPage" class="page">
+        <div class="creators-container">
+            <h2 class="creators-title"><i class="fas fa-code-branch"></i> Создатели проекта</h2>
+            <div class="creator-card">
+                <div class="creator-name">
+                    <i class="fab fa-telegram"></i> biber
+                </div>
+                <div class="creator-role">✨ Создатель клиента ✨</div>
+                <div style="margin-top: 10px; color:#bda6f0;">Отвечает за функционал и стабильность</div>
+            </div>
+            <div class="creator-card">
+                <div class="creator-name">
+                    <i class="fas fa-laptop-code"></i> Jake
+                </div>
+                <div class="creator-role">🌐 Создатель сайта</div>
+                <div style="margin-top: 10px; color:#bda6f0;">Разработал дизайн и пользовательский интерфейс</div>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <i class="fas fa-heart" style="color:#c58aff;"></i> <span style="color:#cdc3f0;">Ez Client</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Попап оплаты (маленькое окошко) -->
+<div class="popup-backdrop" id="paymentBackdrop"></div>
+<div class="payment-popup" id="paymentPopup">
+    <div class="popup-header">
+        <h3><i class="fas fa-credit-card"></i> Способ оплаты</h3>
+        <button class="close-popup" id="closePaymentPopupBtn">&times;</button>
+    </div>
+    <div class="payment-option" id="jakeOption">
+        <div class="payment-icon"><i class="fab fa-telegram"></i></div>
+        <div class="payment-info">
+            <div class="payment-title">Jake СБП</div>
+            <div class="payment-desc">Оплата через СБП • Быстро</div>
+        </div>
+    </div>
+    <div class="payment-option" id="biberOption">
+        <div class="payment-icon"><i class="fas fa-coins"></i></div>
+        <div class="payment-info">
+            <div class="payment-title">biber CryptoBot</div>
+            <div class="payment-desc">Криптовалюта • CryptoBot</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- Приветственное модальное окно (Ez Client) ----------
+    // Создаём приветствие поверх всего, но чтобы не мешало бургеру – вставим динамически
+    (function showWelcomeModal() {
+        const modalDiv = document.createElement('div');
+        modalDiv.id = 'welcomeModal';
+        modalDiv.className = 'modal-overlay';
+        modalDiv.innerHTML = `
+            <div class="modal-window">
+                <div class="modal-icon"><i class="fas fa-hand-sparkles"></i></div>
+                <h2>Вас приветствует <span style="background: linear-gradient(135deg, #ffb86b, #c084fc); background-clip: text; -webkit-background-clip: text; color: transparent;">Ez Client</span></h2>
+                <div class="modal-sub">Выберите идеальный план доступа</div>
+                <button id="goToMainBtn" class="btn-primary"><i class="fas fa-arrow-right"></i> Перейти на главную</button>
+            </div>
+        `;
+        document.body.appendChild(modalDiv);
+        
+        const modalStyle = document.createElement('style');
+        modalStyle.textContent = `
+            .modal-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(3, 1, 10, 0.94); backdrop-filter: blur(8px);
+                display: flex; align-items: center; justify-content: center;
+                z-index: 1500; transition: opacity 0.4s;
+            }
+            .modal-window {
+                background: #0e0c17; border-radius: 2.5rem; max-width: 500px; width: 90%;
+                padding: 2.5rem 2rem; text-align: center; border: 1px solid #6b42c2;
+                box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+                animation: modalPop 0.4s cubic-bezier(0.2,0.9,0.4,1.1) forwards;
+            }
+            @keyframes modalPop { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+            .modal-icon { font-size: 4rem; color:#b87aff; background:#1e1930; width:100px; height:100px; line-height:100px; border-radius:50%; margin:0 auto 1.5rem; }
+            .modal-window h2 { font-size:2rem; font-weight:800; background:linear-gradient(135deg,#dbbaff,#9b6eff); background-clip:text; -webkit-background-clip:text; color:transparent; margin-bottom:0.5rem; }
+            .modal-sub { color:#bda6f0; margin-bottom:2rem; }
+            .btn-primary { background:linear-gradient(100deg,#823eff,#4f1dd9); border:none; padding:0.9rem 2rem; border-radius:60px; font-weight:700; color:white; cursor:pointer; display:inline-flex; align-items:center; gap:12px; }
+        `;
+        document.head.appendChild(modalStyle);
+        
+        const goBtn = document.getElementById('goToMainBtn');
+        if (goBtn) {
+            goBtn.addEventListener('click', () => {
+                modalDiv.style.opacity = '0';
+                setTimeout(() => modalDiv.remove(), 500);
+            });
+        }
+    })();
+
+    // ---------- Навигация (бургер + переключение страниц) ----------
+    const burgerIcon = document.getElementById('burgerIcon');
+    const navMenu = document.getElementById('navMenu');
+    const homePage = document.getElementById('homePage');
+    const creatorsPage = document.getElementById('creatorsPage');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    function closeMenu() {
+        navMenu.classList.remove('active');
+    }
+
+    function toggleMenu(e) {
+        e.stopPropagation();
+        navMenu.classList.toggle('active');
+    }
+
+    burgerIcon.addEventListener('click', toggleMenu);
+    document.addEventListener('click', (e) => {
+        if (!burgerIcon.contains(e.target) && !navMenu.contains(e.target)) {
+            closeMenu();
+        }
+    });
+
+    function switchPage(pageId) {
+        homePage.classList.remove('active-page');
+        creatorsPage.classList.remove('active-page');
+        if (pageId === 'home') homePage.classList.add('active-page');
+        else if (pageId === 'creators') creatorsPage.classList.add('active-page');
+        closeMenu();
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const page = item.getAttribute('data-page');
+            if (page === 'home') switchPage('home');
+            else if (page === 'creators') switchPage('creators');
+        });
+    });
+
+    // ---------- Отображение даты ----------
+    function updateDateWidget() {
+        const now = new Date();
+        const weekDays = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+        const dayName = weekDays[now.getDay()];
+        const dayNumber = now.getDate();
+        const monthName = months[now.getMonth()];
+        const year = now.getFullYear();
+        
+        const dayNameSpan = document.getElementById('currentDayName');
+        const dateNumberSpan = document.getElementById('currentDateNumber');
+        const monthNameSpan = document.getElementById('currentMonthName');
+        const yearSpan = document.getElementById('currentYear');
+        if (dayNameSpan) dayNameSpan.textContent = dayName;
+        if (dateNumberSpan) dateNumberSpan.textContent = dayNumber;
+        if (monthNameSpan) monthNameSpan.textContent = monthName;
+        if (yearSpan) yearSpan.textContent = year;
+    }
+    updateDateWidget();
+
+    // ---------- Попап оплаты ----------
+    const paymentPopup = document.getElementById('paymentPopup');
+    const paymentBackdrop = document.getElementById('paymentBackdrop');
+    const closePopupBtn = document.getElementById('closePaymentPopupBtn');
+    
+    function openPaymentPopup() {
+        paymentPopup.classList.add('active');
+        paymentBackdrop.classList.add('active');
+    }
+    function closePaymentPopup() {
+        paymentPopup.classList.remove('active');
+        paymentBackdrop.classList.remove('active');
+    }
+    closePopupBtn?.addEventListener('click', closePaymentPopup);
+    paymentBackdrop?.addEventListener('click', closePaymentPopup);
+    
+    // Обработчики кнопок оплаты (Telegram)
+    document.getElementById('jakeOption')?.addEventListener('click', () => {
+        window.open('https://t.me/kuvko', '_blank');
+        closePaymentPopup();
+    });
+    document.getElementById('biberOption')?.addEventListener('click', () => {
+        window.open('https://t.me/sylvinyl', '_blank');
+        closePaymentPopup();
+    });
+    
+    // Открытие попапа при клике на "Купить"
+    document.addEventListener('click', (e) => {
+        const buyBtn = e.target.closest('.btn-buy');
+        if (buyBtn && homePage.classList.contains('active-page')) {
+            e.preventDefault();
+            openPaymentPopup();
+        }
+    });
+    
+    // Клик по дате - подсказка
+    document.getElementById('js-dateWidget')?.addEventListener('click', () => {
+        alert(`📅 Сегодня: ${new Date().toLocaleDateString('ru-RU', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n🔮 Выберите подписку.`);
+    });
+    
+    // Микро-анимации
+    document.addEventListener('mousedown', (e) => {
+        const btn = e.target.closest('.btn-buy, .payment-option, .close-popup, .nav-item, .burger-icon');
+        if (btn) {
+            btn.style.transform = 'scale(0.96)';
+            const reset = () => { btn.style.transform = ''; btn.removeEventListener('mouseup', reset); btn.removeEventListener('mouseleave', reset); };
+            btn.addEventListener('mouseup', reset);
+            btn.addEventListener('mouseleave', reset);
+        }
+    });
+</script>
+</body>
+</html>
